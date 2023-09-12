@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Inicio Seccion de Pedidos
+model EstadoPedidos {
+  id          Int       @id @default(autoincrement())
+  estado      String
+  descripcion String
+  Pedidos     Pedidos[]
+}
+
+model LugarEntrega {
+  id      Int       @id @default(autoincrement())
+  lugar   String
+  Pedidos Pedidos[]
+}
+
+model Referencias {
+  id            Int    @id @default(autoincrement())
+  pedidoId      Int
+  referenciaUrl String
+
+  Pedidos Pedidos? @relation(fields: [pedidoId], references: [id])
+}
+
+model Notas {
+  id            Int      @id @default(autoincrement())
+  pedidoId      Int
+  nota          String
+  fechaCreacion DateTime @default(now())
+
+  Pedidos Pedidos? @relation(fields: [pedidoId], references: [id])
+}
+
+model Pedidos {
+  id             Int       @id @default(autoincrement())
+  titulo         String
+  descripcion    String
+  cliente        String
+  estadoId       Int
+  lugarEntregaId Int
+  anticipoPagado Boolean   @default(false)
+  precio         Float
+  fechaCreacion  DateTime  @default(now())
+  fechaEstimada  DateTime
+  fechaEntrega   DateTime?
+  fechaCancelado DateTime?
+
+  estadoPedido EstadoPedidos @relation(fields: [estadoId], references: [id])
+  lugarEntrega LugarEntrega  @relation(fields: [lugarEntregaId], references: [id])
+
+  notas       Notas[]
+  referencias Referencias[]
+}
+
+// Fin de Seccion de Pedidos
+
+// Inicio Seccion de Lista de Materiales
+
+model MaterialCategorias {
+  id            Int          @id @default(autoincrement())
+  nombre        String
+  descripcion   String
+  fechaCreacion DateTime     @default(now())
+  Materiales    Materiales[]
+}
+
+model Materiales {
+  id            Int      @id @default(autoincrement())
+  nombre        String
+  imagenUrl     String
+  categoriaId   Int
+  fechaCreacion DateTime @default(now())
+
+  categoria              MaterialCategorias       @relation(fields: [categoriaId], references: [id])
+  ListaComprasMateriales ListaComprasMateriales[]
+}
+
+model EstadoLista {
+  id     Int    @id @default(autoincrement())
+  estado String
+
+  ListaCompras ListaCompras[]
+}
+
+model ListaCompras {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  fechaCreado DateTime @default(now())
+  estadoId    Int
+
+  estadoLista            EstadoLista              @relation(fields: [estadoId], references: [id])
+  ListaComprasMateriales ListaComprasMateriales[]
+}
+
+model ListaComprasMateriales {
+  id            Int      @id @default(autoincrement())
+  listaCompraId Int
+  materialId    Int
+  cantidad      Int
+  tachado       Boolean  @default(false)
+  fechaCreacion DateTime @default(now())
+
+  listaCompra ListaCompras @relation(fields: [listaCompraId], references: [id])
+  material    Materiales   @relation(fields: [materialId], references: [id])
+}
+
+// Fin de Seccion de Lista de Materiales
