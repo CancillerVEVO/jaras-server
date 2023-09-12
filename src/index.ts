@@ -12,7 +12,7 @@ const PORT = config.server.port;
 const start = () => {
   try {
     app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT} 🚀`);
+      console.log(`Server is running on port ${PORT} 🚀`);
     });
   } catch (error) {
     console.error(error);
