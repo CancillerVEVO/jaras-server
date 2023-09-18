@@ -112,3 +112,9 @@ model ListaComprasMateriales {
 }
 
 // Fin de Seccion de Lista de Materiales
+model Acceso {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique
+  password      String
+  fechaCreacion DateTime @default(now())
+}
