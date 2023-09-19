@@ -36,4 +36,8 @@ const createPedidoSchema = z.object({
   }),
 });
 
-export { createPedidoSchema };
+const pedidoIdSchema = z.number().int().positive({
+  message: "El id del pedido debe ser un numero entero positivo",
+});
+
+export { createPedidoSchema, pedidoIdSchema };

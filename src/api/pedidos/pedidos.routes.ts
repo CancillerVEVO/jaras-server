@@ -7,14 +7,14 @@ import {
   deletePedidoController,
   updatePedidoEstadoController,
 } from "./pedidos.controller";
-import { validateCreatePedido } from "./pedidos.validator";
+import { validateCreatePedido, validatePedidoId } from "./pedidos.validator";
 const router = express.Router();
 
 router.post("/", validateCreatePedido, createPedidoController);
 router.get("/", getPedidosController);
-router.get("/:id", getPedidoController);
-router.put("/:id", updatePedidoController);
-router.delete("/:id", deletePedidoController);
-router.put("/:id/estado", updatePedidoEstadoController);
+router.get("/:id", validatePedidoId, getPedidoController);
+router.put("/:id", validatePedidoId, updatePedidoController);
+router.delete("/:id", validatePedidoId, deletePedidoController);
+router.put("/estado/:id", validatePedidoId, updatePedidoEstadoController);
 
 export default router;
