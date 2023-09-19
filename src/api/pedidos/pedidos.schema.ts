@@ -19,7 +19,7 @@ const createPedidoSchema = z.object({
     })
     .min(1)
     .max(255),
-  lugarEntrega: z
+  lugarEntregaId: z
     .number({
       required_error: "El lugar de entrega es requerido",
     })
@@ -28,13 +28,9 @@ const createPedidoSchema = z.object({
   anticipoPagado: z.boolean({
     required_error: "El anticipo pagado es requerido",
   }),
-  fechaEstimada: z
-    .string({
-      required_error: "La fecha estimada es requerida",
-    })
-    .datetime({
-      message: "La fecha estimada debe ser una fecha valida",
-    }),
+  fechaEstimada: z.coerce.date({
+    required_error: "La fecha estimada es requerida",
+  }),
   precio: z.number({
     required_error: "El precio es requerido",
   }),

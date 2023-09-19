@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { createPedido } from "./pedidos.handler";
+import { successResponse } from "../../handlers/response.handler";
 
 const createPedidoController = async (
   req: Request,
@@ -6,7 +8,11 @@ const createPedidoController = async (
   next: NextFunction
 ) => {
   try {
-    res.send("createPedidoController");
+    const { body } = req;
+
+    const data = await createPedido(body);
+
+    return successResponse(data, "Pedido creado con exito!")(res);
   } catch (error) {
     next(error);
   }

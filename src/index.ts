@@ -2,6 +2,8 @@ import express, { Response, Request } from "express";
 import config from "./config";
 import router from "./routes";
 import { errorHandler } from "./utils/error.handler";
+import { checkConnection } from "./database/prisma";
+
 const app = express();
 
 // Test route
@@ -20,6 +22,7 @@ const start = () => {
   try {
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT} 🚀`);
+      checkConnection();
     });
   } catch (error) {
     console.error(error);
