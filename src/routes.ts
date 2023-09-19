@@ -4,7 +4,7 @@ import { pedidosRouter } from "./api/pedidos";
 
 const router = express.Router();
 
-router.use("/auth", authRouter);
 router.use("/pedidos", pedidosRouter);
+router.use("/auth", authRouter);
 
 export default router;

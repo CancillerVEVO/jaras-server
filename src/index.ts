@@ -1,7 +1,6 @@
 import express, { Response, Request } from "express";
 import config from "./config";
 import router from "./routes";
-
 const app = express();
 
 // Test route

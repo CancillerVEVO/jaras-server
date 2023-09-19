@@ -1,11 +1,11 @@
-export const creatPedido = () => {};
+const creatPedido = () => {};
 
-export const getPedido = () => {};
+const getPedido = () => {};
 
-export const getPedidos = () => {};
+const getPedidos = () => {};
 
-export const updatePedido = () => {};
+const updatePedido = () => {};
 
-export const deletePedido = () => {};
+const deletePedido = () => {};
 
-export const updatePedidoStatus = () => {};
+const updatePedidoStatus = () => {};

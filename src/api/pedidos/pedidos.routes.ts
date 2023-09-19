@@ -7,9 +7,10 @@ import {
   deletePedidoController,
   updatePedidoEstadoController,
 } from "./pedidos.controller";
+import { validateCreatePedido } from "./pedidos.validator";
 const router = express.Router();
 
-router.post("/", createPedidoController);
+router.post("/", validateCreatePedido, createPedidoController);
 router.get("/", getPedidosController);
 router.get("/:id", getPedidoController);
 router.put("/:id", updatePedidoController);

@@ -1,45 +1,55 @@
 import { Request, Response, NextFunction } from "express";
 
-export const createPedidoController = async (
+const createPedidoController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
+    res.send("createPedidoController");
   } catch (error) {
     next(error);
   }
 };
-export const getPedidoController = async (
+const getPedidoController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
+    res.sendStatus(200);
   } catch (error) {
     next(error);
   }
 };
-export const getPedidosController = async (
+const getPedidosController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {};
 
-export const updatePedidoController = async (
+const updatePedidoController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {};
+const deletePedidoController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {};
 
-export const deletePedidoController = async (
+const updatePedidoEstadoController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {};
 
-export const updatePedidoEstadoController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {};
+export {
+  createPedidoController,
+  getPedidoController,
+  getPedidosController,
+  updatePedidoController,
+  deletePedidoController,
+  updatePedidoEstadoController,
+};
