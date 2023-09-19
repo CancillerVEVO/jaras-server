@@ -49,6 +49,20 @@ class NotFoundError extends AppError {
   }
 }
 
+class ValidationError extends AppError {
+  constructor(
+    message: string = "Error de validacion",
+    statusCode: number = 422,
+    error: any = null
+  ) {
+    super(message, statusCode, error);
+    this.name = "ValidationError";
+  }
+
+  static create(message: string = "Error de validacion", error: any = null) {
+    return new ValidationError(message, 422, error);
+  }
+}
 class UnauthorizedError extends AppError {
   constructor(
     message: string = "No autorizado",
@@ -63,4 +77,10 @@ class UnauthorizedError extends AppError {
     return new UnauthorizedError(message, 401, error);
   }
 }
-export { AppError, BadRequestError, NotFoundError, UnauthorizedError };
+export {
+  AppError,
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+};

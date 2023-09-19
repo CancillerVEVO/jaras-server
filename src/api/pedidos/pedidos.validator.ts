@@ -1,3 +1,4 @@
+import { BadRequestError, ValidationError } from "../../handlers/AppError";
 import { createPedidoSchema } from "./pedidos.schema";
 import { Request, Response, NextFunction } from "express";
 
@@ -10,11 +11,10 @@ const validateCreatePedido = async (
     const value = await createPedidoSchema.safeParseAsync(req.body);
 
     if (!value.success) {
-      res.status(400).send({
-        message: value.error.issues,
-      });
-      next();
+      throw ValidationError.create("Error de validacion", value.error.issues);
     }
+
+    next();
   } catch (error) {
     next(error);
   }
