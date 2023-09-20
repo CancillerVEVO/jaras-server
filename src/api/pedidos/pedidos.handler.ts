@@ -90,7 +90,26 @@ const getPedidos = async (skipValue: number, takeValue: number) => {
   };
 };
 
-const updatePedido = () => {};
+const updatePedido = async (pedidoId: number, pedido: Pedidos) => {
+  const isPedido = await prisma.pedidos.findUnique({
+    where: {
+      id: pedidoId,
+    },
+  });
+
+  if (!isPedido) {
+    throw NotFoundError.create("No encontrado", "Pedido no encontrado");
+  }
+
+  const updatedPedido = await prisma.pedidos.update({
+    where: {
+      id: pedidoId,
+    },
+    data: pedido,
+  });
+
+  return updatedPedido;
+};
 
 const deletePedido = async (pedidoId: number) => {
   const isPedido = await prisma.pedidos.findUnique({

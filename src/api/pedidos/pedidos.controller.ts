@@ -4,11 +4,9 @@ import {
   deletePedido,
   getPedido,
   getPedidos,
+  updatePedido,
 } from "./pedidos.handler";
-import {
-  noContentResponse,
-  successResponse,
-} from "../../handlers/response.handler";
+import { successResponse } from "../../handlers/response.handler";
 
 const PER_PAGE = 8;
 
@@ -72,7 +70,16 @@ const updatePedidoController = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  try {
+    const { id } = req.params;
+    const { body } = req;
+    const data = await updatePedido(Number(id), body);
+    return successResponse(data, "Pedido actualizado con exito!")(res);
+  } catch (error) {
+    next(error);
+  }
+};
 
 const updatePedidoEstadoController = async (
   req: Request,

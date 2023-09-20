@@ -13,7 +13,12 @@ const router = express.Router();
 router.post("/", validateCreatePedido, createPedidoController);
 router.get("/", getPedidosController);
 router.get("/:id", validatePedidoId, getPedidoController);
-router.put("/:id", validatePedidoId, updatePedidoController);
+router.put(
+  "/:id",
+  validatePedidoId,
+  validateCreatePedido,
+  updatePedidoController
+);
 router.delete("/:id", validatePedidoId, deletePedidoController);
 router.put("/estado/:id", validatePedidoId, updatePedidoEstadoController);
 
