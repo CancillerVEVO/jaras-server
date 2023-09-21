@@ -1,3 +1,5 @@
 import config from "../../config";
 import FileStorage from "./FileStorage";
-import SupabaseFileStorage from "./SupabaseStorage";
+import FirebaseStorage from "./FirebaseStorage";
+
+const fileStorage: FileStorage = new FirebaseStorage(config.firebase);

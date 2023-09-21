@@ -7,7 +7,9 @@ import {
   getDownloadURL,
   deleteObject,
 } from "firebase/storage";
-class FirebaseStorage {
+import FileStorage from "./FileStorage";
+
+class FirebaseStorage implements FileStorage {
   private app: FirebaseApp;
   private storage: any;
   constructor(config: FirebaseOptions) {
@@ -48,4 +50,37 @@ class FirebaseStorage {
       );
     });
   }
+
+  public async deleteImage(imageUrl: string) {
+    return new Promise<void>(async (resolve, reject) => {
+      const storageRef = ref(this.storage, imageUrl);
+      await deleteObject(storageRef)
+        .then(() => {
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
+
+  public async checkImageExists(imageUrl: string) {
+    return new Promise<boolean>(async (resolve, reject) => {
+      const storageRef = ref(this.storage, imageUrl);
+
+      getDownloadURL(storageRef)
+        .then((url: string) => {
+          resolve(true);
+        })
+        .catch((error) => {
+          if (error.code === "storage/object-not-found") {
+            resolve(false);
+          } else {
+            reject(error);
+          }
+        });
+    });
+  }
 }
+
+export default FirebaseStorage;

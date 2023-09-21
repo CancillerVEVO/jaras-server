@@ -1,7 +1,7 @@
 interface FileStorage {
-  checkIfExists: (fileUrl: string, bucket: string) => Promise<boolean>;
-  upload: (file: any, bucket: string) => Promise<string>;
-  delete: (fileUrl: string, bucket: string) => Promise<boolean>;
+  uploadImage: (file: any, path: string) => Promise<string>;
+  deleteImage: (imageUrl: string) => Promise<void>;
+  checkImageExists: (imageUrl: string) => Promise<boolean>;
 }
 
 export default FileStorage;
