@@ -43,7 +43,7 @@ model Pedidos {
   titulo         String
   descripcion    String
   cliente        String
-  estadoId       Int
+  estadoId       Int       @default(1)
   lugarEntregaId Int
   anticipoPagado Boolean   @default(false)
   precio         Float
