@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { BadRequestError, ValidationError } from "../../handlers/AppError";
+import { z } from "zod";
 
 const validateFilePrescence = (
   req: Request,
@@ -38,4 +39,29 @@ const validateFilePrescence = (
   next();
 };
 
-export { validateFilePrescence };
+const pedidoIdSchema = z.number().int().positive({
+  message: "El id del pedido debe ser un numero entero positivo",
+});
+
+const validatePedidoId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const pedidoId = req.params.pedidoId;
+    if (!pedidoId) {
+      throw ValidationError.create("Error de Validacion", "Id invalido");
+    }
+
+    const value = await pedidoIdSchema.safeParseAsync(Number(pedidoId));
+
+    if (!value.success) {
+      throw ValidationError.create("Error de validacion", value.error.issues);
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+export { validateFilePrescence, validatePedidoId };

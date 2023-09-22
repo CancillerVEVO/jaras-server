@@ -8,6 +8,7 @@ import {
   deleteObject,
 } from "firebase/storage";
 import FileStorage from "./FileStorage";
+import { NotFoundError } from "../../handlers/AppError";
 
 class FirebaseStorage implements FileStorage {
   private app: FirebaseApp;
@@ -17,11 +18,11 @@ class FirebaseStorage implements FileStorage {
     this.storage = getStorage(this.app);
   }
 
-  public async uploadImage(file: any, path: string) {
+  public async uploadImage(file: Express.Multer.File, path: string) {
     return new Promise<string>((resolve, reject) => {
       const storageRef = ref(
         this.storage,
-        `${path}/${randomUUID()}+.${file.mimetype.split("/")[1]}`
+        `${path}/${randomUUID()}.${file.mimetype.split("/")[1]}`
       );
 
       const uploadTask = uploadBytesResumable(storageRef, file.buffer, {

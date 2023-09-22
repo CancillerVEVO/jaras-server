@@ -5,6 +5,7 @@ import {
   NotFoundError,
   ValidationError,
 } from "../../handlers/AppError";
+import fileStorage from "../../lib/files";
 
 const createPedido = async (pedido: Pedidos) => {
   const nuevoPedido = await prisma.pedidos.create({
@@ -15,10 +16,6 @@ const createPedido = async (pedido: Pedidos) => {
 };
 
 const getPedido = async (pedidoId: number) => {
-  const [estado, lugarEntrega] = await prisma.$transaction([
-    prisma.estadoPedidos.findMany(),
-    prisma.lugarEntrega.findMany(),
-  ]);
   const data = await prisma.pedidos.findUnique({
     where: {
       id: pedidoId,
@@ -34,8 +31,20 @@ const getPedido = async (pedidoId: number) => {
           lugar: true,
         },
       },
+
+      referencias: {
+        select: {
+          id: true,
+          referenciaUrl: true,
+        },
+      },
     },
   });
+
+  if (!data) {
+    throw NotFoundError.create("No encontrado", "Pedido no encontrado");
+  }
+
   const pedido = {
     id: data?.id,
     titulo: data?.titulo,
@@ -49,44 +58,38 @@ const getPedido = async (pedidoId: number) => {
     fechaCreacion: data?.fechaCreacion,
     fechaEntrega: data?.fechaEntrega,
     fechaCancelacion: data?.fechaCancelado,
+    referencias: data?.referencias,
   };
   return {
-    estado,
-    lugarEntrega,
     pedido,
   };
 };
 
 const getPedidos = async (skipValue: number, takeValue: number) => {
-  const [estado, lugarEntrega, pedidos, totalResults] =
-    await prisma.$transaction([
-      prisma.estadoPedidos.findMany(),
-      prisma.lugarEntrega.findMany(),
-      prisma.pedidos.findMany({
-        orderBy: {
-          fechaCreacion: "desc",
-        },
-        skip: skipValue,
-        take: takeValue,
-        include: {
-          estadoPedido: {
-            select: {
-              estado: true,
-            },
-          },
-          lugarEntrega: {
-            select: {
-              lugar: true,
-            },
+  const [pedidos, totalResults] = await prisma.$transaction([
+    prisma.pedidos.findMany({
+      orderBy: {
+        fechaCreacion: "desc",
+      },
+      skip: skipValue,
+      take: takeValue,
+      include: {
+        estadoPedido: {
+          select: {
+            estado: true,
           },
         },
-      }),
-      prisma.pedidos.count(),
-    ]);
+        lugarEntrega: {
+          select: {
+            lugar: true,
+          },
+        },
+      },
+    }),
+    prisma.pedidos.count(),
+  ]);
 
   return {
-    lugarEntrega,
-    estado,
     pedidos: pedidos.map((pedido) => ({
       id: pedido.id,
       titulo: pedido.titulo,
@@ -151,14 +154,31 @@ const updatePedido = async (pedidoId: number, pedido: Pedidos) => {
 };
 
 const deletePedido = async (pedidoId: number) => {
-  const isPedido = await prisma.pedidos.findUnique({
+  const pedido = await prisma.pedidos.findUnique({
     where: {
       id: pedidoId,
     },
+    include: {
+      referencias: {
+        select: {
+          id: true,
+          referenciaUrl: true,
+        },
+      },
+    },
   });
 
-  if (!isPedido) {
+  if (!pedido) {
     throw NotFoundError.create("No encontrado", "Pedido no encontrado");
+  }
+
+  if (pedido.referencias.length > 0) {
+    await Promise.all(
+      pedido.referencias.map(
+        async (referencia) =>
+          await fileStorage.deleteImage(referencia.referenciaUrl)
+      )
+    );
   }
 
   const deletedPedido = await prisma.pedidos.delete({
@@ -170,7 +190,17 @@ const deletePedido = async (pedidoId: number) => {
   return deletedPedido;
 };
 
-const updatePedidoStatus = () => {};
+const getEstados = async () => {
+  const [estados, lugares] = await prisma.$transaction([
+    prisma.estadoPedidos.findMany(),
+    prisma.lugarEntrega.findMany(),
+  ]);
+
+  return {
+    estados,
+    lugares,
+  };
+};
 
 export {
   createPedido,
@@ -178,5 +208,5 @@ export {
   getPedidos,
   updatePedido,
   deletePedido,
-  updatePedidoStatus,
+  getEstados,
 };

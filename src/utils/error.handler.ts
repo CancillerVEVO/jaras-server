@@ -1,5 +1,6 @@
 import e, { NextFunction, Request, Response } from "express";
 import { AppError, ValidationError } from "../handlers/AppError";
+import { FirebaseError } from "firebase/app";
 
 const errorHandler = (
   err: Error,
@@ -20,6 +21,13 @@ const errorHandler = (
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       status: err.status,
+      error: err.message,
+    });
+  }
+
+  if (err instanceof FirebaseError) {
+    return res.status(500).json({
+      status: "error",
       error: err.message,
     });
   }
