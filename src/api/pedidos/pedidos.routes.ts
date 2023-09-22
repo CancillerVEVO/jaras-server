@@ -1,16 +1,18 @@
 import express from "express";
+import { referenciasRouter } from "../referencias";
 import {
   createPedidoController,
   getPedidosController,
   getPedidoController,
   updatePedidoController,
   deletePedidoController,
-  updatePedidoEstadoController,
+  getEstadosController,
 } from "./pedidos.controller";
 import { validateCreatePedido, validatePedidoId } from "./pedidos.validator";
 const router = express.Router();
 
 router.post("/", validateCreatePedido, createPedidoController);
+router.get("/estados", getEstadosController);
 router.get("/", getPedidosController);
 router.get("/:id", validatePedidoId, getPedidoController);
 router.put(
@@ -19,7 +21,7 @@ router.put(
   validateCreatePedido,
   updatePedidoController
 );
+
 router.delete("/:id", validatePedidoId, deletePedidoController);
-router.put("/estado/:id", validatePedidoId, updatePedidoEstadoController);
 
 export default router;

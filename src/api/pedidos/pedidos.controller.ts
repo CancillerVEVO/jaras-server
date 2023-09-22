@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import {
   createPedido,
   deletePedido,
+  getEstados,
   getPedido,
   getPedidos,
   updatePedido,
@@ -81,11 +82,18 @@ const updatePedidoController = async (
   }
 };
 
-const updatePedidoEstadoController = async (
+const getEstadosController = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  try {
+    const data = await getEstados();
+    return successResponse(data, "Estados obtenidos con exito!")(res);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export {
   createPedidoController,
@@ -93,5 +101,5 @@ export {
   getPedidosController,
   updatePedidoController,
   deletePedidoController,
-  updatePedidoEstadoController,
+  getEstadosController,
 };
