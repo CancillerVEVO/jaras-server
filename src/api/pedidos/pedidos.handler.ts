@@ -23,11 +23,13 @@ const getPedido = async (pedidoId: number) => {
     include: {
       estadoPedido: {
         select: {
+          id: true,
           estado: true,
         },
       },
       lugarEntrega: {
         select: {
+          id: true,
           lugar: true,
         },
       },
@@ -51,7 +53,9 @@ const getPedido = async (pedidoId: number) => {
     descripcion: data?.descripcion,
     cliente: data?.cliente,
     estadoPedido: data?.estadoPedido.estado,
+    estadoPedidoId: data?.estadoPedido.id,
     lugarEntrega: data?.lugarEntrega.lugar,
+    lugarEntregaId: data?.lugarEntrega.id,
     anticipoPagado: data?.anticipoPagado,
     precio: data?.precio,
     fechaEstimada: data?.fechaEstimada,
@@ -66,17 +70,17 @@ const getPedido = async (pedidoId: number) => {
 };
 
 const getPedidos = async (skipValue: number, takeValue: number) => {
-  const [pedidos, totalResults] = await prisma.$transaction([
+  const [estados, lugares, pedidos, totalResults] = await prisma.$transaction([
+    prisma.estadoPedidos.findMany(),
+    prisma.lugarEntrega.findMany(),
     prisma.pedidos.findMany({
-      orderBy: {
-        fechaCreacion: "desc",
-      },
       skip: skipValue,
       take: takeValue,
       include: {
         estadoPedido: {
           select: {
             estado: true,
+            id: true,
           },
         },
         lugarEntrega: {
@@ -90,12 +94,14 @@ const getPedidos = async (skipValue: number, takeValue: number) => {
   ]);
 
   return {
+    estados,
+    lugares,
     pedidos: pedidos.map((pedido) => ({
       id: pedido.id,
       titulo: pedido.titulo,
       descripcion: pedido.descripcion,
       cliente: pedido.cliente,
-      estadoPedido: pedido.estadoPedido.estado,
+      estadoPedido: pedido.estadoPedido.id,
       lugarEntrega: pedido.lugarEntrega.lugar,
       anticipoPagado: pedido.anticipoPagado,
       precio: pedido.precio,

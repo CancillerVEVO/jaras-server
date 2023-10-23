@@ -1,4 +1,3 @@
-import { NotBeforeError } from "jsonwebtoken";
 import { prisma } from "../../database/prisma";
 import fileStorage from "../../lib/files";
 import { NotFoundError } from "../../handlers/AppError";
