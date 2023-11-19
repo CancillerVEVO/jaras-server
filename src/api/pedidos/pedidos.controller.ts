@@ -9,8 +9,6 @@ import {
 } from "./pedidos.handler";
 import { successResponse } from "../../handlers/response.handler";
 
-const PER_PAGE = 8;
-
 const createPedidoController = async (
   req: Request,
   res: Response,
@@ -45,8 +43,7 @@ const getPedidosController = async (
   next: NextFunction
 ) => {
   try {
-    const skip = req.query.page ? (Number(req.query.page) - 1) * PER_PAGE : 0;
-    const data = await getPedidos(skip, PER_PAGE);
+    const data = await getPedidos();
     return successResponse(data, "Pedidos obtenidos con exito!")(res);
   } catch (error) {
     next(error);

@@ -69,13 +69,11 @@ const getPedido = async (pedidoId: number) => {
   };
 };
 
-const getPedidos = async (skipValue: number, takeValue: number) => {
+const getPedidos = async () => {
   const [estados, lugares, pedidos, totalResults] = await prisma.$transaction([
     prisma.estadoPedidos.findMany(),
     prisma.lugarEntrega.findMany(),
     prisma.pedidos.findMany({
-      skip: skipValue,
-      take: takeValue,
       include: {
         estadoPedido: {
           select: {
@@ -111,8 +109,6 @@ const getPedidos = async (skipValue: number, takeValue: number) => {
       fechaCancelacion: pedido.fechaCancelado,
     })),
     totalResults,
-    page: skipValue / takeValue + 1,
-    totalPages: Math.ceil(totalResults / takeValue),
   };
 };
 
