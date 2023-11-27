@@ -1,5 +1,5 @@
 import { prisma } from "../../database/prisma";
-
+import { format, parseISO } from "date-fns";
 const getDashboard = async () => {
   const [enProceso, entregados, cancelados] = await prisma.$transaction([
     prisma.pedidos.count({
@@ -19,26 +19,30 @@ const getDashboard = async () => {
     }),
   ]);
 
+  const colors = ["#FF6384", "#36A2EB", "#FFCE56"];
   const total = enProceso + entregados + cancelados;
   const pieChart = [
     {
-      x: "En Proceso",
-      y: enProceso,
-      text: `${((enProceso * 100) / total).toFixed(2)}%`,
+      type: "En Proceso",
+      value: enProceso,
+      color: colors[0],
     },
     {
-      x: "Entregados",
-      y: entregados,
-      text: `${((entregados * 100) / total).toFixed(2)}%`,
+      type: "Entregados",
+      value: entregados,
+      color: colors[1],
     },
     {
-      x: "Cancelados",
-      y: cancelados,
-      text: `${((cancelados * 100) / total).toFixed(2)}%`,
+      type: "Cancelados",
+      value: cancelados,
+      color: colors[2],
     },
   ];
 
   const pedidosCompletados = await prisma.pedidos.findMany({
+    orderBy: {
+      fechaEntrega: "asc",
+    },
     where: {
       estadoId: 2,
     },
@@ -48,9 +52,31 @@ const getDashboard = async () => {
     },
   });
 
-  const saleByDate = pedidosCompletados.map((pedido) => ({
-    x: pedido.fechaEntrega,
-    y: pedido.precio,
+  const salesByDateMap = new Map<string, number>();
+
+  pedidosCompletados.forEach((pedido) => {
+    const fechaEntrega = pedido.fechaEntrega ? pedido.fechaEntrega : "";
+    const formattedDate = fechaEntrega
+      ? format(parseISO(fechaEntrega.toISOString()), "dd/MM/yyyy")
+      : "";
+
+    if (formattedDate) {
+      if (salesByDateMap.has(formattedDate)) {
+        // Sumar al valor existente
+        salesByDateMap.set(
+          formattedDate,
+          salesByDateMap.get(formattedDate)! + pedido.precio
+        );
+      } else {
+        // Agregar una nueva entrada
+        salesByDateMap.set(formattedDate, pedido.precio);
+      }
+    }
+  });
+
+  const saleByDate = Array.from(salesByDateMap).map((sale) => ({
+    fecha: sale[0],
+    total: sale[1],
   }));
 
   const totalSales = pedidosCompletados.reduce(
